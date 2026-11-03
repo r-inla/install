@@ -1,3 +1,15 @@
+# INLA 26.11.03-1
+* Fixed inla.setOption without a matching binary
+
+# INLA 26.11.03
+* Windows: inla.call fix
+
+# INLA 26.10.27-1
+* some compiling improvements
+
+# INLA 26.10.27
+* some compiling improvements
+
 # INLA 26.10.26-1
 * Update install scripts
 
