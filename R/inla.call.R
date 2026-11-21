@@ -1,23 +1,25 @@
-`inla.remote.script` <- function(what = NULL) {
-    if (is.null(what)) {
+`inla.remote.script` <- function(cmd = NULL) {
+    if (is.null(cmd)) {
         return (NULL)
     }
-    ## no remote scripts on Windows: a path is used as given
+    if (nchar(cmd) == 0) {
+        return (cmd)
+    }
     if (inla.os("windows")) {
-        return (what)
+        return (cmd)
     }
 
-    f <- system.file(file.path("remote", paste0("inla.", what)), package = "INLA")
+    f <- system.file(file.path("remote", paste0("inla.", cmd)), package = "INLA")
     if (nzchar(f)) {
         return(f)
     } 
 
-    f <- system.file(file.path("remote", what), package = "INLA")
+    f <- system.file(file.path("remote", cmd), package = "INLA")
     if (nzchar(f)) {
         return(f)
     } 
 
-    return(what)
+    return(cmd)
 }
 
 `inla.call.no.remote` <- function() {
@@ -89,11 +91,14 @@
     ## Nothing set? Look where inla.stiles.install() puts it.
     if (is.null(path) || !is.character(path) || !nzchar(path)) {
         exe <- if (.Platform$OS.type == "windows") "inla.exe" else "inla.run"
-        want <- file.path(paste0("Version_", inla.version("version")), "bin", exe)
+        ver <- paste0("Version_", inla.version("version"))
+        ## the Windows zip is flat: inla.exe sits in Version_x itself
+        want <- c(file.path(ver, "bin", exe), file.path(ver, exe))
         for (b in inla.binary.bases()) {
             full.path <- file.path(b, want)
-            if (file.access(full.path) == 0) {
-                path <- full.path
+            full.path <- full.path[file.access(full.path) == 0]
+            if (length(full.path) > 0) {
+                path <- full.path[1]
                 break
             }
         }
